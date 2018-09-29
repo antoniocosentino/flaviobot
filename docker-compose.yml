@@ -1,0 +1,15 @@
+version: '2'
+services:
+
+  mombot:
+    env_file:
+      variables.env
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    image: mombot:local-latest
+    ports:
+      - 1811:1811
+    volumes:
+        - ./:/opt/
+    command: nodemon
