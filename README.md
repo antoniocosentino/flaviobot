@@ -16,7 +16,7 @@ Clone this repo, then run:
 
 `npm install`
 
-You also need to create two environmentable variables:
+You also need to create two environmental variables:
 
 `export BOTPORT=80` assuming that you want to run it on port 80
 
