@@ -6,6 +6,8 @@ Mombot is a bot for Slack.
 ## What does he do?
 You can direct message him and he will reply "your mom". It works also when mentioned inside a public or private channel (if he's invited in the channel obviously).
 
+![screenshot](screenshot.png)
+
 ## Is this all he does?!?
 Yep.
 
