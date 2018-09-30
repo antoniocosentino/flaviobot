@@ -1,6 +1,6 @@
 FROM node:6.9.5
 
-EXPOSE 1811
+EXPOSE 80
 
 WORKDIR /opt/
 

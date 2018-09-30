@@ -1,7 +1,6 @@
 const request = require('request');
 const express = require('express');
 const app = express();
-const _ = require('lodash');
 
 app.listen(process.env.BOTPORT, () => {
     console.log(`Mombot is live on port ${process.env.BOTPORT}`);

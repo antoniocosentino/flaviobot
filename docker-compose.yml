@@ -6,10 +6,10 @@ services:
       variables.env
     build:
       context: .
-      dockerfile: docker/Dockerfile
+      dockerfile: Dockerfile
     image: mombot:local-latest
     ports:
-      - 1811:1811
+      - 80:80
     volumes:
         - ./:/opt/
     command: nodemon
