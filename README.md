@@ -10,7 +10,7 @@ You can direct message him and he will reply "your mom". It works also when ment
 Yep.
 
 #
-## How to run
+## Setup
 ### Natively (Node.js)
 Clone this repo, then run:
 
@@ -18,9 +18,12 @@ Clone this repo, then run:
 
 You also need to create two environmental variables:
 
-`export BOTPORT=80` assuming that you want to run it on port 80
+`export BOTPORT=80` the port where you want to run the bot
 
 `export TOKEN=xxx-xxx` this is the token you get from Slack
+
+When this is done you can simply run it with:
+`npm start`
 
 #
 ### Docker
@@ -34,7 +37,7 @@ TOKEN=xxx-xxx
 BOTPORT=80
 ```
 
-When this is done you can with Docker:
+When this is done you can run it with Docker:
 
 `docker-compose up --build`
 
