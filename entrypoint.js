@@ -66,6 +66,10 @@ controller.on('rtm_close', bot => {
 //     bot.reply(message, "I'm here!")
 // });
 
+controller.hears('mombot','ambient', (bot, message) => {
+    bot.reply(message, `that's what your mom said`);
+});
+
 controller.hears('.*', 'direct_message,mention,direct_mention', (bot, message) => {
     console.log(`New message from user ${message.user}: "${message.text}"`)
 
