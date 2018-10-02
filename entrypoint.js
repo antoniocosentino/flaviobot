@@ -1,6 +1,9 @@
 const request = require('request');
 const express = require('express');
 const app = express();
+app.use(express.urlencoded());
+
+this.thebot = null;
 
 app.listen(process.env.BOTPORT, () => {
     console.log(`Mombot is live on port ${process.env.BOTPORT}`);
@@ -8,6 +11,15 @@ app.listen(process.env.BOTPORT, () => {
 
 app.get('/', (req, res) => {
     res.send('Mombot is running');
+});
+
+app.post('/yourmom', (req, res) => {
+    res.send('delivering a mom joke');
+
+    this.thebot.say({
+        text: `that's what your mom said`,
+        channel: req.body.channel_id
+    });
 });
 
 function onInstallation(bot, installer) {
@@ -55,19 +67,12 @@ if (process.env.TOKEN) {
 
 controller.on('rtm_open', bot => {
     console.log('** The RTM api just connected!');
+    this.thebot = bot;
 });
 
 controller.on('rtm_close', bot => {
     console.log('** The RTM api just closed (connection closed)');
     process.exit(1);
-});
-
-// controller.on('bot_channel_join', (bot, message) => {
-//     bot.reply(message, "I'm here!")
-// });
-
-controller.hears('mombot','ambient', (bot, message) => {
-    bot.reply(message, `that's what your mom said`);
 });
 
 controller.hears('.*', 'direct_message,mention,direct_mention', (bot, message) => {
