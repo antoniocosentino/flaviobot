@@ -80,6 +80,21 @@ const getFriendlyNameFromId = ( id ) => {
     return id;
 }
 
+const constructResponse = () => {
+    
+    let finalResponse = '';
+
+    for (const [key, value] of Object.entries(participantsWords)) {
+        
+        const friendly_name = getFriendlyNameFromId( key );
+
+        finalResponse = `\n - *${ friendly_name }*: ${value}`;
+    }
+
+    return finalResponse;
+}
+
+
 if (process.env.TOKEN) {
     const customIntegration = require('./lib/custom_integrations');
     const token = process.env.TOKEN;
@@ -116,7 +131,7 @@ controller.hears('vai!', 'direct_mention', (bot, message) => {
 controller.hears('stop!', 'direct_mention', (bot, message) => {
     if ( isGameRunning ) {
         
-        const allWords = JSON.stringify( participantsWords );
+        const allWords = constructResponse();
 
         bot.reply(message, `Il gioco è chiuso. Ecco le parole: \n ${allWords}`);
         isGameRunning = false;
