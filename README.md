@@ -1,15 +1,12 @@
 
-# Mombot
+# Flaviobot
 
-Mombot is a bot for Slack.
+Flaviobot is a bot that allows to play the famous Italian TV game "La Ghigliottina" with friends on Slack.
 
-## What does he do?
-You can direct message him and he will reply "your mom". It works also when mentioned inside a public or private channel (if he's invited in the channel obviously).
+The goal is to be able to store all the participants' words and then reveal them all together when the game is over.
 
-![screenshot](screenshot.png)
+Flaviobot is currently WIP. A more detailed readme is coming soon.
 
-## Is this all he does?!?
-Yep.
 
 #
 ## Setup
