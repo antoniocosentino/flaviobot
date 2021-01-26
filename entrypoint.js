@@ -46,6 +46,40 @@ if (process.env.MONGOLAB_URI) {
 
 let controller;
 
+//////
+// All the live variables are stored here
+//////
+
+// is the game running?
+let isGameRunning = false;
+
+// the channel where the "start" command was launched is the
+// channel where the game is happening
+let channelId = undefined;
+
+// storing the words
+let participantsWords = {};
+
+
+
+// I don't want to make an extra API call for this, so I will store the known
+// players nicknames here
+
+const KNOWN_USERS = new Map([
+    ['U5ZDPV5S6', 'Kose']
+]);
+
+
+const getFriendlyNameFromId = ( id ) => {
+    const friendly_name = KNOWN_USERS.get( id );
+
+    if ( friendly_name ) {
+        return friendly_name;
+    }
+
+    return id;
+}
+
 if (process.env.TOKEN) {
     const customIntegration = require('./lib/custom_integrations');
     const token = process.env.TOKEN;
@@ -66,8 +100,40 @@ controller.on('rtm_close', bot => {
     process.exit(1);
 });
 
-controller.hears('.*', 'direct_message,mention,direct_mention', (bot, message) => {
-    console.log(`New message from user ${message.user}: "${message.text}"`)
+controller.hears('vai!', 'direct_mention', (bot, message) => {
+    if ( !isGameRunning ) {
+        bot.reply(message, 'Inizia il gioco. Attendo le vostre risposte in DM.');
+        isGameRunning = true;
+        // resetting the words object
+        participantsWords = {};
+        channelId = message.channel;
+    }
+    else {
+        bot.reply(message, 'Il gioco è già stato avviato.');
+    }
+});
 
-    bot.reply(message, 'buonasera amici telespettatori!');
+controller.hears('stop!', 'direct_mention', (bot, message) => {
+    if ( isGameRunning ) {
+        
+        const allWords = JSON.stringify( participantsWords );
+
+        bot.reply(message, `Il gioco è chiuso. Ecco le parole: \n ${allWords}`);
+        isGameRunning = false;
+    }
+    else {
+        bot.reply(message, 'Nessun gioco in corso.');
+    }
+
+});
+
+
+controller.hears('.*', 'direct_message', (bot, message) => {
+    if ( isGameRunning ) {
+        participantsWords[ message.user ] = message.text;
+        bot.reply(message, `Ok, ho memorizzato la tua parola: ${message.text}`);
+    }
+    else {
+        bot.reply(message, 'Non puoi inviarmi la parola se il gioco non è in corso.');
+    }
 });
