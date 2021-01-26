@@ -1,4 +1,4 @@
-FROM node:6.9.5
+FROM node:12.3.1
 
 EXPOSE 80
 
