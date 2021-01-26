@@ -66,7 +66,10 @@ let participantsWords = {};
 // players nicknames here
 
 const KNOWN_USERS = new Map([
-    ['U5ZDPV5S6', 'Kose']
+    ['U5ZDPV5S6', 'Kose'],
+    ['U5QJXTGR1', 'Guybrush'],
+    ['U5X56H0TG', 'Stefano'],
+    ['U5Q1D5LE4', 'Manu']
 ]);
 
 
@@ -117,14 +120,14 @@ controller.on('rtm_close', bot => {
 
 controller.hears('vai!', 'direct_mention', (bot, message) => {
     if ( !isGameRunning ) {
-        bot.reply(message, 'Inizia il gioco. Attendo le vostre risposte in DM.');
+        bot.reply(message, 'Inizia il gioco. Attendo le vostre risposte in DM');
         isGameRunning = true;
         // resetting the words object
         participantsWords = {};
         channelId = message.channel;
     }
     else {
-        bot.reply(message, 'Il gioco è già stato avviato.');
+        bot.reply(message, 'Il gioco è già stato avviato');
     }
 });
 
@@ -137,7 +140,7 @@ controller.hears('stop!', 'direct_mention', (bot, message) => {
         isGameRunning = false;
     }
     else {
-        bot.reply(message, 'Nessun gioco in corso.');
+        bot.reply(message, 'Nessun gioco in corso');
     }
 
 });
@@ -147,8 +150,15 @@ controller.hears('.*', 'direct_message', (bot, message) => {
     if ( isGameRunning ) {
         participantsWords[ message.user ] = message.text;
         bot.reply(message, `Ok, ho memorizzato la tua parola: ${message.text}`);
+
+        const friendly_name = getFriendlyNameFromId( message.user );
+
+        this.thebot.say({
+            text: `*${ friendly_name }* ha scritto la sua parola`,
+            channel: channelId
+        });
     }
     else {
-        bot.reply(message, 'Non puoi inviarmi la parola se il gioco non è in corso.');
+        bot.reply(message, 'Non puoi inviarmi la parola se il gioco non è in corso');
     }
 });
