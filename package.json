@@ -1,7 +1,7 @@
 {
-  "name": "mombot",
+  "name": "flaviobot",
   "version": "1.0.0",
-  "description": "your mom",
+  "description": "Flaviobot is a bot that allows to play the popular Italian TV game \"La Ghigliottina\" with friends on Slack.",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/antoniocosentino/mombot.git"
+    "url": "git+https://github.com/antoniocosentino/flaviobot.git"
   },
   "keywords": [
     "your",
@@ -17,7 +17,7 @@
   ],
   "author": "Antonio Cosentino",
   "license": "MIT",
-  "homepage": "https://github.com/antoniocosentino/mombot#readme",
+  "homepage": "https://github.com/antoniocosentino/flaviobot#readme",
   "engines": {
     "node": "5.1.1"
   },

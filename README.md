@@ -1,7 +1,7 @@
 
 # Flaviobot
 
-Flaviobot is a bot that allows to play the famous Italian TV game "La Ghigliottina" with friends on Slack.
+Flaviobot is a bot that allows to play the popular Italian TV game "La Ghigliottina" with friends on Slack.
 
 The goal is to be able to store all the participants' words and then reveal them all together when the game is over.
 

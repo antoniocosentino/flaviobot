@@ -6,20 +6,11 @@ app.use(express.urlencoded());
 this.thebot = null;
 
 app.listen(process.env.BOTPORT, () => {
-    console.log(`Mombot is live on port ${process.env.BOTPORT}`);
+    console.log(`Flaviobot is live on port ${process.env.BOTPORT}`);
 });
 
 app.get('/', (req, res) => {
-    res.send('Mombot is running');
-});
-
-app.post('/yourmom', (req, res) => {
-    res.send('delivering a mom joke');
-
-    this.thebot.say({
-        text: `that's what your mom said`,
-        channel: req.body.channel_id
-    });
+    res.send('Flaviobot is running');
 });
 
 function onInstallation(bot, installer) {
@@ -78,5 +69,5 @@ controller.on('rtm_close', bot => {
 controller.hears('.*', 'direct_message,mention,direct_mention', (bot, message) => {
     console.log(`New message from user ${message.user}: "${message.text}"`)
 
-    bot.reply(message, 'your mom');
+    bot.reply(message, 'buonasera amici telespettatori!');
 });
