@@ -5,8 +5,10 @@ app.use(express.urlencoded());
 
 this.thebot = null;
 
-app.listen(process.env.BOTPORT, () => {
-    console.log(`Flaviobot is live on port ${process.env.BOTPORT}`);
+const THEPORT = process.env.PORT || process.env.BOTPORT || 80;
+
+app.listen(THEPORT, () => {
+    console.log(`Flaviobot is live on port ${THEPORT}`);
 });
 
 app.get('/', (req, res) => {
