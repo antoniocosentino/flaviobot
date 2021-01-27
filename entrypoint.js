@@ -93,7 +93,7 @@ const constructResponse = () => {
         
         const friendly_name = getFriendlyNameFromId( key );
 
-        finalResponse = `\n - *${ friendly_name }*: ${value}`;
+        finalResponse = finalResponse + `- *${ friendly_name }*: ${value} \n`;
     }
 
     return finalResponse;
