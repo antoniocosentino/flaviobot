@@ -19,7 +19,7 @@
   "license": "MIT",
   "homepage": "https://github.com/antoniocosentino/flaviobot#readme",
   "engines": {
-    "node": "5.1.1"
+    "node": "12.3.1"
   },
   "dependencies": {
     "botkit": "0.2.2",
