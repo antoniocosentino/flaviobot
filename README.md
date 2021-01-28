@@ -7,8 +7,10 @@ The goal is to be able to secretly store all the participants' words while the g
 
 ![Flaviobot](avatar/flaviobot.jpg)
 
+The name Flaviobot is inspired by **Flavio Insinna**, the host of the TV show.
+
 ## How does it work?
-> ℹ️  &nbsp; since the gameshow is in Italian, the bot as well "speaks" only Italian.
+> ℹ️  &nbsp; since the gameshow is in Italian, the bot "speaks" only Italian.
 
 ### Bot invitation
 The bot needs to be invited in your channel. It can also be a private channel. Just invite it as you would do with a real person. It will automatically accept and join.
