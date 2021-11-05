@@ -1,6 +1,8 @@
+const { json } = require('express');
 const express = require('express');
 const app = express();
 const _ = require('lodash');
+const fs = require('fs');
 app.use(express.urlencoded());
 
 const storedChart = require('./chart/data.json');
@@ -12,6 +14,10 @@ const THEPORT = process.env.PORT || process.env.BOTPORT || 80;
 
 app.listen(THEPORT, () => {
     console.log(`Flaviobot is live on port ${THEPORT}`);
+
+    const winners = getWinners( 'BICCHIERE' );
+    
+    updateChart( winners );
 });
 
 app.get('/', (req, res) => {
@@ -58,6 +64,9 @@ let controller;
 // is the game running?
 let isGameRunning = false;
 
+// when the game is closed, the bot expects to know what the word was. This will be used for the chart management.
+let isWaitingForWord = false;
+
 // the channel where the "start" command was launched is the
 // channel where the game is happening
 let channelId = undefined;
@@ -77,6 +86,12 @@ const KNOWN_USERS = new Map([
     ['U5Q1D5LE4', 'Manu']
 ]);
 
+// this is only here for debugging purposes
+// it should never be used in production code
+const DEMOWORDS = {
+    U5ZDPV5S6: 'BICCHIERE',
+    U5QJXTGR1: 'CAVALLO'
+}
 
 const getFriendlyNameFromId = ( id ) => {
     const friendly_name = KNOWN_USERS.get( id );
@@ -111,6 +126,63 @@ const constructChart = () => {
     } );
 
     return finalResponse;
+}
+
+const getWinners = ( correctWord ) => {
+
+    const winnersArr = [];
+
+    // TODO: DEMOWORDS should be participantsWords
+    for (const [key, value] of Object.entries( DEMOWORDS ) ) {
+        if ( value.toLowerCase() === correctWord.toLowerCase() ) {
+            winnersArr.push( key );
+        }
+    }
+
+    return winnersArr;
+}
+
+
+const updateChart = ( winners ) => {
+
+    // TODO: DEMOWORDS should be participantsWords
+    const numberOfPoints = Object.entries( DEMOWORDS ).length;
+
+    const pointsPerWinner = numberOfPoints / winners.length;
+    
+    // TODO: here we need to introduce the logic that gives the extra points to the fastest person
+
+    const updatedChart = [];
+
+    sessionChart.results.forEach( ( singlePerson ) => {
+        // check if this person is a winner
+        if ( winners.includes( singlePerson.user ) ) {
+            updatedChart.push(
+                {
+                    user: singlePerson.user,
+                    score: singlePerson.score + pointsPerWinner
+                }
+            )
+        } else {
+            updatedChart.push(
+                {
+                    user: singlePerson.user,
+                    score: singlePerson.score
+                }
+            )
+        }
+    } );
+
+    sessionChart = {
+        results: updatedChart
+    }
+
+    const updatedDataForStorage = JSON.stringify( sessionChart );
+    
+    console.log("🍌: updateChart -> updatedDataForStorage" + updatedDataForStorage)
+    
+    // TODO: uncomment this to start updating the file
+    fs.writeFileSync('./chart/data.json', updatedDataForStorage);
 }
 
 
@@ -154,9 +226,23 @@ controller.hears('stop!', 'direct_mention', (bot, message) => {
 
         bot.reply(message, `Il gioco è chiuso. Ecco le parole: \n ${allWords}`);
         isGameRunning = false;
+        isWaitingForWord = true;
     }
     else {
         bot.reply(message, 'Nessun gioco in corso');
+    }
+
+});
+
+controller.hears('era', 'direct_mention', (bot, message) => {
+    if ( !isWaitingForWord ) {
+        bot.reply(message, `Non puoi comunicarmi la parola vincente in questa fase del gioco.`);
+    }
+    else {
+        isWaitingForWord = false;
+        const relevantWordRegex = /(?<=\bera\s)(\w+)/;
+        const finalWord = message.text.match( relevantWordRegex )[0];
+        // TODO: insert here all the chart update mechanism
     }
 
 });
