@@ -25,6 +25,7 @@
     "botkit": "0.2.2",
     "botkit-storage-mongo": "^1.0.2",
     "express": "^4.16.3",
+    "fs": "^0.0.1-security",
     "lodash": "^4.17.5",
     "mongodb": "^1.4.39"
   }
