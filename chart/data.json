@@ -1,1 +1,20 @@
-{"results":[{"user":"U5ZDPV5S6","score":20},{"user":"U5QJXTGR1","score":20},{"user":"U5X56H0TG","score":2},{"user":"U5Q1D5LE4","score":0}]}
+{
+	"results": [
+		{
+			"user": "U5ZDPV5S6",
+			"score": 18
+		},
+		{
+			"user": "U5QJXTGR1",
+			"score": 20
+		},
+		{
+			"user": "U5X56H0TG",
+			"score": 2
+		},
+		{
+			"user": "U5Q1D5LE4",
+			"score": 0
+		}
+	]
+}
