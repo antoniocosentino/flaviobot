@@ -1,4 +1,3 @@
-const { json } = require('express');
 const express = require('express');
 const app = express();
 const _ = require('lodash');
@@ -14,10 +13,6 @@ const THEPORT = process.env.PORT || process.env.BOTPORT || 80;
 
 app.listen(THEPORT, () => {
     console.log(`Flaviobot is live on port ${THEPORT}`);
-
-    const winners = getWinners( 'BICCHIERE' );
-    
-    updateChart( winners );
 });
 
 app.get('/', (req, res) => {
@@ -86,13 +81,6 @@ const KNOWN_USERS = new Map([
     ['U5Q1D5LE4', 'Manu']
 ]);
 
-// this is only here for debugging purposes
-// it should never be used in production code
-const DEMOWORDS = {
-    U5ZDPV5S6: 'BICCHIERE',
-    U5QJXTGR1: 'CAVALLO'
-}
-
 const getFriendlyNameFromId = ( id ) => {
     const friendly_name = KNOWN_USERS.get( id );
 
@@ -111,7 +99,7 @@ const constructResponse = () => {
         
         const friendly_name = getFriendlyNameFromId( key );
 
-        finalResponse = finalResponse + `• *${ friendly_name }*: ${value} \n`;
+        finalResponse = finalResponse + `• *${ friendly_name }*: ${ value.word } \n`;
     }
 
     return finalResponse;
@@ -132,9 +120,8 @@ const getWinners = ( correctWord ) => {
 
     const winnersArr = [];
 
-    // TODO: DEMOWORDS should be participantsWords
-    for (const [key, value] of Object.entries( DEMOWORDS ) ) {
-        if ( value.toLowerCase() === correctWord.toLowerCase() ) {
+    for (const [key, value] of Object.entries( participantsWords ) ) {
+        if ( value.word.toLowerCase() === correctWord.toLowerCase() ) {
             winnersArr.push( key );
         }
     }
@@ -145,22 +132,41 @@ const getWinners = ( correctWord ) => {
 
 const updateChart = ( winners ) => {
 
-    // TODO: DEMOWORDS should be participantsWords
-    const numberOfPoints = Object.entries( DEMOWORDS ).length;
+    const numberOfPoints = Object.entries( participantsWords ).length;
 
-    const pointsPerWinner = numberOfPoints / winners.length;
+    const pointsPerWinner = Math.floor( numberOfPoints / winners.length );
     
-    // TODO: here we need to introduce the logic that gives the extra points to the fastest person
+    const extraPoint = numberOfPoints % winners.length;
+    
+    let fastestWinner = null;
+    let previousWinnerTime = Math.floor( Date.now() / 1000 ); // setting this to now, since obviously answer cannot come from the future
+    
+    // in this case we need to assign this point to the person who answered first
+    if ( extraPoint > 0 ) {
+        for (const [key, value] of Object.entries( participantsWords ) ) {
+            // first of all check if this is a winner
+            if ( winners.includes( key ) ) {
+                // now that we know that this is a winner, check if he was the fastest
+                if ( value.sentAt < previousWinnerTime ) {
+                    fastestWinner = key;
+                    previousWinnerTime = value.sentAt
+                }
+            }
+        }
+    }
 
     const updatedChart = [];
 
     sessionChart.results.forEach( ( singlePerson ) => {
         // check if this person is a winner
         if ( winners.includes( singlePerson.user ) ) {
+            
+            const additionalPoints = singlePerson.user === fastestWinner ? extraPoint : 0;
+
             updatedChart.push(
                 {
                     user: singlePerson.user,
-                    score: singlePerson.score + pointsPerWinner
+                    score: singlePerson.score + pointsPerWinner + additionalPoints
                 }
             )
         } else {
@@ -179,9 +185,6 @@ const updateChart = ( winners ) => {
 
     const updatedDataForStorage = JSON.stringify( sessionChart );
     
-    console.log("🍌: updateChart -> updatedDataForStorage" + updatedDataForStorage)
-    
-    // TODO: uncomment this to start updating the file
     fs.writeFileSync('./chart/data.json', updatedDataForStorage);
 }
 
@@ -242,7 +245,16 @@ controller.hears('era', 'direct_mention', (bot, message) => {
         isWaitingForWord = false;
         const relevantWordRegex = /(?<=\bera\s)(\w+)/;
         const finalWord = message.text.match( relevantWordRegex )[0];
-        // TODO: insert here all the chart update mechanism
+        
+        const winners = getWinners( finalWord );
+
+        if ( winners.length < 1 ) {
+            bot.reply(message, `La parola era ${finalWord}. Non ci sono stati vincitori.`);
+        } else {
+            updateChart( winners );
+            const readableChart = constructChart();
+            bot.reply(message, `La parola era ${finalWord}. Ecco la classifica aggiornata: \n${ readableChart }`);
+        }
     }
 
 });
@@ -255,7 +267,10 @@ controller.hears('classifica!', 'direct_mention', (bot, message) => {
 
 controller.hears('.*', 'direct_message', (bot, message) => {
     if ( isGameRunning ) {
-        participantsWords[ message.user ] = message.text;
+        participantsWords[ message.user ] = {
+            word: message.text,
+            sentAt: Math.floor( Date.now() / 1000 )
+        }
         bot.reply(message, `Ok, ho memorizzato la tua parola: ${message.text}`);
 
         const friendly_name = getFriendlyNameFromId( message.user );
