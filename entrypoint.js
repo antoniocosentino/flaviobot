@@ -1,7 +1,10 @@
-const request = require('request');
 const express = require('express');
 const app = express();
+const _ = require('lodash');
 app.use(express.urlencoded());
+
+const storedChart = require('./chart/data.json');
+let sessionChart = storedChart;
 
 this.thebot = null;
 
@@ -99,6 +102,17 @@ const constructResponse = () => {
     return finalResponse;
 }
 
+const constructChart = () => {
+    const sorted = _.orderBy( sessionChart.results, 'score', 'desc' );
+    let finalResponse = '';
+
+    sorted.forEach( ( singleResult ) => {
+        finalResponse = finalResponse + `• *${ getFriendlyNameFromId( singleResult.user ) }*: ${singleResult.score} \n`;
+    } );
+
+    return finalResponse;
+}
+
 
 if (process.env.TOKEN) {
     const customIntegration = require('./lib/custom_integrations');
@@ -147,6 +161,11 @@ controller.hears('stop!', 'direct_mention', (bot, message) => {
 
 });
 
+controller.hears('classifica!', 'direct_mention', (bot, message) => {
+    const readableChart = constructChart();
+
+    bot.reply(message, `Ecco la classifica: \n ${readableChart}`);
+});
 
 controller.hears('.*', 'direct_message', (bot, message) => {
     if ( isGameRunning ) {
