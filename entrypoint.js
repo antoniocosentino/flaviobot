@@ -1,18 +1,24 @@
 const express = require('express');
 const app = express();
 const _ = require('lodash');
-const fs = require('fs');
+const axios = require('axios');
+
 app.use(express.urlencoded());
 
-const storedChart = require('./chart/data.json');
-let sessionChart = storedChart;
-
+let sessionChart = null;
 this.thebot = null;
 
 const THEPORT = process.env.PORT || process.env.BOTPORT || 80;
+const SCOREAPI = process.env.SCOREAPI || null;
 
 app.listen(THEPORT, () => {
     console.log(`Flaviobot is live on port ${THEPORT}`);
+
+    if ( SCOREAPI ) {
+        axios.get( SCOREAPI ).then( resp => {
+            sessionChart = resp.data;
+        });
+    }
 });
 
 app.get('/', (req, res) => {
@@ -185,7 +191,15 @@ const updateChart = ( winners ) => {
 
     const updatedDataForStorage = JSON.stringify( sessionChart );
     
-    fs.writeFileSync('./chart/data.json', updatedDataForStorage);
+    axios
+        .post( SCOREAPI, sessionChart )
+        .then(res => {
+            console.log( `statusCode: ${res.status}` )
+            console.log( res )
+        })
+        .catch(error => {
+            console.error( error )
+        })
 }
 
 
@@ -241,6 +255,9 @@ controller.hears('era', 'direct_mention', (bot, message) => {
     if ( !isWaitingForWord ) {
         bot.reply(message, `Non puoi comunicarmi la parola vincente in questa fase del gioco.`);
     }
+    else if ( !SCOREAPI ) {
+        bot.reply(message, `Questa funzionalità non è supportata.`);
+    }
     else {
         isWaitingForWord = false;
         const relevantWordRegex = /(?<=\bera\s)(\w+)/;
@@ -260,9 +277,13 @@ controller.hears('era', 'direct_mention', (bot, message) => {
 });
 
 controller.hears('classifica!', 'direct_mention', (bot, message) => {
-    const readableChart = constructChart();
-
-    bot.reply(message, `Ecco la classifica: \n ${readableChart}`);
+    
+    if ( !SCOREAPI ) {
+        bot.reply(message, `Questa funzionalità non è supportata.`);    
+    } else {
+        const readableChart = constructChart();
+        bot.reply(message, `Ecco la classifica: \n ${readableChart}`);
+    }
 });
 
 controller.hears('.*', 'direct_message', (bot, message) => {

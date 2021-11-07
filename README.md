@@ -86,6 +86,8 @@ You also need to create two environmental variables:
 
 `export TOKEN=xxx-xxx` this is the token you get from Slack
 
+`export SCOREAPI=https://backend.url` URL of the backend that will store the scores *(optional)*
+
 When this is done you can simply run it with:
 `npm start`
 
