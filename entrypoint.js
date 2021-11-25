@@ -260,7 +260,7 @@ controller.hears('era', 'direct_mention', (bot, message) => {
     }
     else {
         isWaitingForWord = false;
-        const relevantWordRegex = /(?<=\bera\s)(\w+)/;
+        const relevantWordRegex = /(?<=\bera\s)([A-zÀ-ÿ]+)/;
         const finalWord = message.text.match( relevantWordRegex )[0];
         
         const winners = getWinners( finalWord );
