@@ -1,11 +1,21 @@
-import express from 'express';
-import { PORT } from './config';
-const app = express();
+import { APP_TOKEN, PORT, SIGNING_SECRET, TOKEN } from './config';
 
-app.get('/', (req, res) => {
-    res.send('Flaviobot is running');
+const { App } = require('@slack/bolt');
+
+const app = new App({
+    token: TOKEN,
+    signingSecret: SIGNING_SECRET,
+    socketMode: true,
+    appToken: APP_TOKEN,
 });
 
-app.listen(PORT, () => {
-    return console.log(`Flaviobot is live on port ${PORT}`);
+app.message('hello', async ({ command, say }) => {
+    try {
+        say('yolo');
+    } catch (error) {
+        console.log('err');
+        console.error(error);
+    }
 });
+
+app.start(PORT);
