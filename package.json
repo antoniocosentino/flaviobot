@@ -27,5 +27,7 @@
     "prettier": "^2.7.1",
     "typescript": "^4.8.4"
   },
-  "dependencies": {}
+  "dependencies": {
+    "lodash": "^4.17.21"
+  }
 }
