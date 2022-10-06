@@ -9,11 +9,18 @@ const app = new App({
     appToken: APP_TOKEN,
 });
 
-app.message('hello', async ({ command, say }) => {
+app.event('message', async ({ event, context, client, say }) => {
     try {
-        say('yolo');
+        await say('you wrote me something on a direct message');
     } catch (error) {
-        console.log('err');
+        console.error(error);
+    }
+});
+
+app.event('app_mention', async ({ event, context, client, say }) => {
+    try {
+        await say("i've been mentioned");
+    } catch (error) {
         console.error(error);
     }
 });
