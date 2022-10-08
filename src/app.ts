@@ -1,6 +1,13 @@
 import { APP_TOKEN, PORT, SIGNING_SECRET, TOKEN, SCORES_API } from './config';
 import { TParticipantsWords, TSessionScores } from './types';
-import { constructResponse, constructScores, getWinners, removeMentionFromString, saySomething } from './utilities';
+import {
+    constructResponse,
+    constructScores,
+    getFriendlyNameFromId,
+    getWinners,
+    removeMentionFromString,
+    saySomething,
+} from './utilities';
 const { App } = require('@slack/bolt');
 const axios = require('axios');
 
@@ -95,11 +102,28 @@ const updateScores = (winners): void => {
         });
 };
 
-app.event('message', async ({ event, say }) => {
-    try {
-        await say('you wrote me something on a direct message');
-    } catch (error) {
-        console.error(error);
+app.event('message', async ({ event, say, client }) => {
+    const triggerWord = event.text;
+
+    if (isGameRunning) {
+        participantsWords[event.user] = {
+            word: triggerWord,
+            sentAt: Math.floor(Date.now() / 1000),
+        };
+        saySomething(say, `Ok, ho memorizzato la tua parola: ${triggerWord}`);
+
+        const friendly_name = getFriendlyNameFromId(event.user);
+
+        try {
+            await client.chat.postMessage({
+                channel: channelId,
+                text: `*${friendly_name}* ha scritto la sua parola`,
+            });
+        } catch (error) {
+            console.error(error);
+        }
+    } else {
+        saySomething(say, 'Non puoi inviarmi la parola se il gioco non è in corso');
     }
 });
 

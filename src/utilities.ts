@@ -11,7 +11,7 @@ const KNOWN_USERS = new Map([
     ['U5Q1D5LE4', 'Manu'],
 ]);
 
-const getFriendlyNameFromId = (id: string): string => {
+export const getFriendlyNameFromId = (id: string): string => {
     const friendly_name = KNOWN_USERS.get(id);
 
     if (friendly_name) {
