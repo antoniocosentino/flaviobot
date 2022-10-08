@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "npx tsc",
-    "start": "node dist/app.js"
+    "start": "node dist/app.js",
+    "dev": "yarn build && yarn start"
   },
   "repository": {
     "type": "git",
@@ -28,6 +29,7 @@
     "typescript": "^4.8.4"
   },
   "dependencies": {
+    "axios": "^1.1.2",
     "lodash": "^4.17.21"
   }
 }

@@ -21,7 +21,7 @@ const getFriendlyNameFromId = (id: string): string => {
     return id;
 };
 
-const constructResponse = (participantsWords: TParticipantsWords) => {
+const constructResponse = (participantsWords: TParticipantsWords): string => {
     let finalResponse = '';
 
     for (const [key, value] of Object.entries(participantsWords)) {
@@ -33,7 +33,7 @@ const constructResponse = (participantsWords: TParticipantsWords) => {
     return finalResponse;
 };
 
-const constructChart = (sessionScores: TSessionScores) => {
+const constructScores = (sessionScores: TSessionScores): string => {
     const sorted = _.orderBy(sessionScores.results, 'score', 'desc');
     let finalResponse = '';
 
@@ -44,7 +44,7 @@ const constructChart = (sessionScores: TSessionScores) => {
     return finalResponse;
 };
 
-const getWinners = (correctWord: string, participantsWords: TParticipantsWords) => {
+const getWinners = (correctWord: string, participantsWords: TParticipantsWords): string[] => {
     const winnersArr = [];
 
     for (const [key, value] of Object.entries(participantsWords)) {
