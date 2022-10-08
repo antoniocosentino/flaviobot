@@ -1,5 +1,6 @@
 import { APP_TOKEN, PORT, SIGNING_SECRET, TOKEN, SCORES_API } from './config';
 import { TParticipantsWords, TSessionScores } from './types';
+import { constructResponse, constructScores, getWinners, removeMentionFromString, saySomething } from './utilities';
 const { App } = require('@slack/bolt');
 const axios = require('axios');
 
@@ -103,10 +104,67 @@ app.event('message', async ({ event, say }) => {
 });
 
 app.event('app_mention', async ({ event, say }) => {
-    try {
-        await say("i've been mentioned");
-    } catch (error) {
-        console.error(error);
+    const triggerWord = removeMentionFromString(event.text);
+
+    switch (triggerWord) {
+        case 'vai!':
+            if (!isGameRunning) {
+                saySomething(say, 'Inizia il gioco. Attendo le vostre risposte in DM');
+                isGameRunning = true;
+                // resetting the words object
+                participantsWords = {};
+                channelId = event.channel;
+            } else {
+                saySomething(say, 'Il gioco è già stato avviato');
+            }
+            break;
+
+        case 'stop!':
+            if (isGameRunning) {
+                const allWords = constructResponse(participantsWords);
+
+                saySomething(say, `Il gioco è chiuso. Ecco le parole: \n ${allWords}`);
+                isGameRunning = false;
+                isWaitingForWord = true;
+            } else {
+                saySomething(say, 'Nessun gioco in corso');
+            }
+            break;
+
+        case 'classifica!':
+            if (!SCORES_API) {
+                saySomething(say, 'Questa funzionalità non è supportata.');
+            } else {
+                const readableScores = constructScores(sessionScores);
+                saySomething(say, `Ecco la classifica: \n ${readableScores}`);
+            }
+
+            break;
+    }
+
+    // the switch only covered the exact matches
+    // in the case where we communicate the correct work, we need to do a sentence pattern
+
+    if (triggerWord.startsWith('era ')) {
+        if (!isWaitingForWord) {
+            saySomething(say, 'Non puoi comunicarmi la parola vincente in questa fase del gioco.');
+        } else if (!SCORES_API) {
+            saySomething(say, 'Questa funzionalità non è supportata.');
+        } else {
+            isWaitingForWord = false;
+            const relevantWordRegex = /(?<=\bera\s)([A-zÀ-ÿ]+)/;
+            const finalWord = triggerWord.match(relevantWordRegex)[0];
+
+            const winners = getWinners(finalWord, participantsWords);
+
+            if (winners.length < 1) {
+                saySomething(say, `La parola era ${finalWord}. Non ci sono stati vincitori.`);
+            } else {
+                updateScores(winners);
+                const readableChart = constructScores(sessionScores);
+                saySomething(say, `La parola era ${finalWord}. Ecco la classifica aggiornata: \n${readableChart}`);
+            }
+        }
     }
 });
 

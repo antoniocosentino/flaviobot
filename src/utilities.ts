@@ -21,7 +21,7 @@ const getFriendlyNameFromId = (id: string): string => {
     return id;
 };
 
-const constructResponse = (participantsWords: TParticipantsWords): string => {
+export const constructResponse = (participantsWords: TParticipantsWords): string => {
     let finalResponse = '';
 
     for (const [key, value] of Object.entries(participantsWords)) {
@@ -33,7 +33,7 @@ const constructResponse = (participantsWords: TParticipantsWords): string => {
     return finalResponse;
 };
 
-const constructScores = (sessionScores: TSessionScores): string => {
+export const constructScores = (sessionScores: TSessionScores): string => {
     const sorted = _.orderBy(sessionScores.results, 'score', 'desc');
     let finalResponse = '';
 
@@ -44,7 +44,7 @@ const constructScores = (sessionScores: TSessionScores): string => {
     return finalResponse;
 };
 
-const getWinners = (correctWord: string, participantsWords: TParticipantsWords): string[] => {
+export const getWinners = (correctWord: string, participantsWords: TParticipantsWords): string[] => {
     const winnersArr = [];
 
     for (const [key, value] of Object.entries(participantsWords)) {
@@ -54,4 +54,20 @@ const getWinners = (correctWord: string, participantsWords: TParticipantsWords):
     }
 
     return winnersArr;
+};
+
+export const saySomething = async (say: any, whatToSay: string): Promise<void> => {
+    // NOTE: say is the method returned by bolt, which apparently is not typed
+    // therefore I'm just going to use any for it
+    try {
+        await say(whatToSay);
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+export const removeMentionFromString = (text: string): string => {
+    const indexOfSpace = text.indexOf(' ');
+
+    return text.substring(indexOfSpace + 1);
 };
