@@ -38,12 +38,6 @@ let channelId = undefined as string;
 // storing the words
 let participantsWords = {} as TParticipantsWords;
 
-// Useful information for development
-// relevant info is all part of "event"
-// - user
-// - text
-// - channel
-
 const updateScores = (winners): void => {
     const numberOfPoints = Object.entries(participantsWords).length;
 
@@ -166,8 +160,8 @@ app.event('app_mention', async ({ event, say }) => {
             break;
     }
 
-    // the switch only covered the exact matches
-    // in the case where we communicate the correct work, we need to do a sentence pattern
+    // The switch only covered the exact matches
+    // in the case where we communicate the correct word to the bot, we need to match a sentence pattern
 
     if (triggerWord.startsWith('era ')) {
         if (!isWaitingForWord) {
