@@ -1,6 +1,6 @@
 const _ = require('lodash');
 
-import { TParticipantsWords, TSessionScores } from './types';
+import { TParticipantsWords, TSessionScores, TSingleScore } from './types';
 
 // I don't want to make an extra API call for this, so I will store the known
 // players nicknames here
@@ -54,6 +54,56 @@ export const getWinners = (correctWord: string, participantsWords: TParticipants
     }
 
     return winnersArr;
+};
+
+export const getUpdatedScores = (
+    participantsWords: TParticipantsWords,
+    winners: string[],
+    sessionScores: TSessionScores,
+): TSingleScore[] => {
+    const numberOfPoints = Object.entries(participantsWords).length;
+
+    const pointsPerWinner = Math.floor(numberOfPoints / winners.length);
+
+    const extraPoint = numberOfPoints % winners.length;
+
+    let fastestWinner = null;
+    let previousWinnerTime = Math.floor(Date.now() / 1000); // setting this to now, since obviously answer cannot come from the future
+
+    // in this case we need to assign this point to the person who answered first
+    if (extraPoint > 0) {
+        for (const [key, value] of Object.entries(participantsWords)) {
+            // first of all check if this is a winner
+            if (winners.includes(key)) {
+                // now that we know that this is a winner, check if he was the fastest
+                if (value.sentAt < previousWinnerTime) {
+                    fastestWinner = key;
+                    previousWinnerTime = value.sentAt;
+                }
+            }
+        }
+    }
+
+    const updatedScores = [] as TSingleScore[];
+
+    sessionScores.results.forEach((singlePerson) => {
+        // check if this person is a winner
+        if (winners.includes(singlePerson.user)) {
+            const additionalPoints = singlePerson.user === fastestWinner ? extraPoint : 0;
+
+            updatedScores.push({
+                user: singlePerson.user,
+                score: singlePerson.score + pointsPerWinner + additionalPoints,
+            });
+        } else {
+            updatedScores.push({
+                user: singlePerson.user,
+                score: singlePerson.score,
+            });
+        }
+    });
+
+    return updatedScores;
 };
 
 export const saySomething = async (say: any, whatToSay: string): Promise<void> => {

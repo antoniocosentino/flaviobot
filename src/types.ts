@@ -9,7 +9,7 @@ export type TSessionScores = {
     results: TSingleScore[];
 };
 
-type TSingleScore = {
+export type TSingleScore = {
     user: string;
     score: number;
 };
