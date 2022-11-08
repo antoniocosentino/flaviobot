@@ -4,10 +4,10 @@
   "description": "Flaviobot is a bot that allows to play the popular Italian TV game \\\"La Ghigliottina\\\" with friends on Slack.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "build": "npx tsc",
     "start": "node dist/app.js",
-    "dev": "yarn build && yarn start"
+    "dev": "yarn build && yarn start",
+    "test": "yarn jest"
   },
   "repository": {
     "type": "git",
@@ -25,8 +25,11 @@
   },
   "homepage": "https://github.com/antoniocosentino/flaviobot#readme",
   "devDependencies": {
+    "@types/jest": "^29.2.2",
     "@types/node": "^18.8.3",
+    "jest": "^29.3.0",
     "prettier": "^2.7.1",
+    "ts-jest": "^29.0.3",
     "typescript": "^4.8.4"
   },
   "dependencies": {

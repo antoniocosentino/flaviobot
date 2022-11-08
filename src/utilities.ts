@@ -45,7 +45,7 @@ export const constructScores = (sessionScores: TSessionScores): string => {
 };
 
 export const getWinners = (correctWord: string, participantsWords: TParticipantsWords): string[] => {
-    const winnersArr = [];
+    const winnersArr = [] as string[];
 
     for (const [key, value] of Object.entries(participantsWords)) {
         if (value.word.toLowerCase() === correctWord.toLowerCase()) {
