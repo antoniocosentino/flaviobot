@@ -22,7 +22,7 @@ const app = new App({
     appToken: APP_TOKEN,
 });
 
-const logger = createLogger({
+export const logger = createLogger({
     level: 'info',
     format: combine(label({ label: 'flaviolog' }), timestamp(), prettyPrint()),
     transports: [new transports.Console()],
@@ -127,7 +127,7 @@ app.event('app_mention', async ({ event, say }) => {
 
                 logger.log({
                     level: 'info',
-                    message: 'Game was stopped',
+                    message: `Game was stopped - Words: ${participantsWords}`,
                 });
             } else {
                 saySomething(say, 'Nessun gioco in corso');
