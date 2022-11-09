@@ -1,8 +1,9 @@
-import { APP_TOKEN, PORT, SIGNING_SECRET, TOKEN, SCORES_API } from './config';
+import { APP_TOKEN, PORT, SIGNING_SECRET, TOKEN, SCORES_API, DEBUG_MODE } from './config';
 import { TParticipantsWords, TSessionScores } from './types';
 import {
     constructResponse,
     constructScores,
+    extractWordFromSentence,
     getFriendlyNameFromId,
     getUpdatedScores,
     getWinners,
@@ -11,6 +12,8 @@ import {
 } from './utilities';
 const { App } = require('@slack/bolt');
 const axios = require('axios');
+const { createLogger, format, transports } = require('winston');
+const { combine, timestamp, label, prettyPrint } = format;
 
 const app = new App({
     token: TOKEN,
@@ -18,6 +21,14 @@ const app = new App({
     socketMode: true,
     appToken: APP_TOKEN,
 });
+
+const logger = createLogger({
+    level: 'info',
+    format: combine(label({ label: 'flaviolog' }), timestamp(), prettyPrint()),
+    transports: [new transports.Console()],
+});
+
+logger.silent = !DEBUG_MODE;
 
 //////
 // All the live variables are stored here
@@ -65,6 +76,11 @@ app.event('message', async ({ event, say, client }) => {
         };
         saySomething(say, `Ok, ho memorizzato la tua parola: ${triggerWord}`);
 
+        logger.log({
+            level: 'info',
+            message: `Received word from ${event.user}: ${triggerWord}`,
+        });
+
         const friendly_name = getFriendlyNameFromId(event.user);
 
         try {
@@ -91,6 +107,11 @@ app.event('app_mention', async ({ event, say }) => {
                 // resetting the words object
                 participantsWords = {};
                 channelId = event.channel;
+
+                logger.log({
+                    level: 'info',
+                    message: 'Game was started',
+                });
             } else {
                 saySomething(say, 'Il gioco è già stato avviato');
             }
@@ -103,6 +124,11 @@ app.event('app_mention', async ({ event, say }) => {
                 saySomething(say, `Il gioco è chiuso. Ecco le parole: \n ${allWords}`);
                 isGameRunning = false;
                 isWaitingForWord = true;
+
+                logger.log({
+                    level: 'info',
+                    message: 'Game was stopped',
+                });
             } else {
                 saySomething(say, 'Nessun gioco in corso');
             }
@@ -114,6 +140,11 @@ app.event('app_mention', async ({ event, say }) => {
             } else {
                 const readableScores = constructScores(sessionScores);
                 saySomething(say, `Ecco la classifica: \n ${readableScores}`);
+
+                logger.log({
+                    level: 'info',
+                    message: `Asked for scores. Current scores: ${sessionScores}`,
+                });
             }
 
             break;
@@ -129,10 +160,15 @@ app.event('app_mention', async ({ event, say }) => {
             saySomething(say, 'Questa funzionalità non è supportata.');
         } else {
             isWaitingForWord = false;
-            const relevantWordRegex = /(?<=\bera\s)([A-zÀ-ÿ]+)/;
-            const finalWord = triggerWord.match(relevantWordRegex)[0];
+
+            const finalWord = extractWordFromSentence(triggerWord);
 
             const winners = getWinners(finalWord, participantsWords);
+
+            logger.log({
+                level: 'info',
+                message: `Received final word: ${finalWord} - Winners: ${winners} `,
+            });
 
             if (winners.length < 1) {
                 saySomething(say, `La parola era ${finalWord}. Non ci sono stati vincitori.`);

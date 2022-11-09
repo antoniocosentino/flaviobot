@@ -1,4 +1,4 @@
-import { getUpdatedScores, getWinners } from '../src/utilities';
+import { extractWordFromSentence, getUpdatedScores, getWinners } from '../src/utilities';
 
 describe('getWinners', () => {
     it('should get the correct list of winners - 3 participants / 2 winners', async () => {
@@ -58,6 +58,10 @@ describe('getUpdatedScores', () => {
                     user: 'U5X56H0TG',
                     score: 3,
                 },
+                {
+                    user: 'U5Q1D5LE4',
+                    score: 0,
+                },
             ],
         };
 
@@ -76,6 +80,26 @@ describe('getUpdatedScores', () => {
                 user: 'U5X56H0TG',
                 score: 3,
             },
+            {
+                user: 'U5Q1D5LE4',
+                score: 0,
+            },
         ]);
+    });
+});
+
+describe('extractWordFromSentence', () => {
+    it('should get only the relevant word from the sentence', async () => {
+        const sentence = 'era BOSCO';
+        const response = extractWordFromSentence(sentence);
+
+        expect(response).toEqual('BOSCO');
+    });
+
+    it('should get only the relevant word from the sentence - extra space', async () => {
+        const sentence = 'era BOSCO ';
+        const response = extractWordFromSentence(sentence);
+
+        expect(response).toEqual('BOSCO');
     });
 });

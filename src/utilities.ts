@@ -121,3 +121,8 @@ export const removeMentionFromString = (text: string): string => {
 
     return text.substring(indexOfSpace + 1);
 };
+
+export const extractWordFromSentence = (sentence: string): string => {
+    const relevantWordRegex = /(?<=\bera\s)([A-zÀ-ÿ]+)/;
+    return sentence.match(relevantWordRegex)[0];
+};
