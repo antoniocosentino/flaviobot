@@ -127,7 +127,7 @@ app.event('app_mention', async ({ event, say }) => {
 
                 logger.log({
                     level: 'info',
-                    message: `Game was stopped - Words: ${participantsWords}`,
+                    message: `Game was stopped - Words: ${JSON.stringify(participantsWords)}`,
                 });
             } else {
                 saySomething(say, 'Nessun gioco in corso');
@@ -143,7 +143,7 @@ app.event('app_mention', async ({ event, say }) => {
 
                 logger.log({
                     level: 'info',
-                    message: `Asked for scores. Current scores: ${sessionScores}`,
+                    message: `Asked for scores. Current scores: ${JSON.stringify(sessionScores)}`,
                 });
             }
 
@@ -167,7 +167,7 @@ app.event('app_mention', async ({ event, say }) => {
 
             logger.log({
                 level: 'info',
-                message: `Received final word: ${finalWord} - Winners: ${winners} `,
+                message: `Received final word: ${finalWord} - Winners: ${JSON.stringify(winners)} `,
             });
 
             if (winners.length < 1) {
