@@ -143,7 +143,7 @@ app.event('app_mention', async ({ event, say }) => {
 
                 logger.log({
                     level: 'info',
-                    message: `Asked for scores. Current scores: ${JSON.stringify(sessionScores)}`,
+                    message: `${event.user} asked for scores. Current scores: ${JSON.stringify(sessionScores)}`,
                 });
             }
 
