@@ -22,7 +22,7 @@ const app = new App({
     appToken: APP_TOKEN,
 });
 
-export const logger = createLogger({
+const logger = createLogger({
     level: 'info',
     format: combine(label({ label: 'flaviolog' }), timestamp(), prettyPrint()),
     transports: [new transports.Console()],
