@@ -1,5 +1,7 @@
 # Flaviobot
 
+![Unit tests](https://github.com/antoniocosentino/flaviobot/actions/workflows/unit-tests.yml/badge.svg)
+
 **Flaviobot** is a bot that allows you to play the popular Italian TV game ["La Ghigliottina"](<https://en.wikipedia.org/wiki/L%27eredit%C3%A0#%22La_Ghigliottina%22_(The_Guillotine,_round_7)>) with friends on Slack.
 
 The goal is to be able to secretly store all the participants' words while the game is on and then reveal them all together when everybody has submitted a word. The bot is also able to store and update the players scoreboard.
@@ -62,13 +64,19 @@ Once the correct word is revealed in the TV show, it can be communicated to the 
 @flaviobot era {WORD}
 ```
 
-![Stopping](screenshots/scores.png)
+![Scores](screenshots/scores.png)
 
-In case there are winners, the updated chart will be revealed. Otherwise the bot will just communicate that nobody guessed the right word. The scoreboard can be revealed at any time, by using this command:
+In case there are winners, the updated chart will be revealed. Otherwise the bot will just communicate that nobody guessed the right word.
+
+![No Winners](screenshots/no-winners.png)
+
+The scoreboard can be revealed at any time, by using this command:
 
 ```
 @flaviobot classifica!
 ```
+
+![Scores COMMAND](screenshots/scores-command.png)
 
 #### How points are calculated
 
