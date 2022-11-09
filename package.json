@@ -6,6 +6,7 @@
   "scripts": {
     "build": "npx tsc",
     "start": "node dist/src/app.js",
+    "container-start": "node dist/app.js",
     "dev": "yarn build && yarn start",
     "test": "yarn jest"
   },

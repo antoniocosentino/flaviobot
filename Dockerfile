@@ -13,4 +13,4 @@ COPY src /opt/flaviobot/src
 
 RUN yarn build
 
-CMD [ "yarn", "start" ]
+CMD [ "yarn", "container-start" ]
