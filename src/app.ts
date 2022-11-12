@@ -50,7 +50,7 @@ let channelId = undefined as string;
 // storing the words
 let participantsWords = {} as TParticipantsWords;
 
-const updateScores = (winners): void => {
+const updateScores = (winners): Promise<boolean> => {
     sessionScores = {
         results: getUpdatedScores(participantsWords, winners, sessionScores),
     };
@@ -58,12 +58,22 @@ const updateScores = (winners): void => {
     axios
         .post(SCORES_API, sessionScores)
         .then((res) => {
-            console.log(`statusCode: ${res.status}`);
-            console.log(res);
+            logger.log({
+                level: 'info',
+                message: `API update - Status: ${res.status}`,
+            });
+
+            return true;
         })
         .catch((error) => {
-            console.error(error);
+            logger.log({
+                level: 'error',
+                message: `API update error: ${error}`,
+            });
+            return false;
         });
+
+    return new Promise(Boolean);
 };
 
 app.event('message', async ({ event, say, client }) => {
@@ -110,7 +120,7 @@ app.event('app_mention', async ({ event, say }) => {
 
                 logger.log({
                     level: 'info',
-                    message: 'Game was started',
+                    message: `Game was started - Session scores: ${JSON.stringify(sessionScores)}`,
                 });
             } else {
                 saySomething(say, 'Il gioco è già stato avviato');
@@ -173,9 +183,17 @@ app.event('app_mention', async ({ event, say }) => {
             if (winners.length < 1) {
                 saySomething(say, `La parola era ${finalWord}. Non ci sono stati vincitori.`);
             } else {
-                updateScores(winners);
-                const readableChart = constructScores(sessionScores);
-                saySomething(say, `La parola era ${finalWord}. Ecco la classifica aggiornata: \n${readableChart}`);
+                const updateScoresAction = await updateScores(winners);
+
+                if (updateScoresAction) {
+                    logger.log({
+                        level: 'info',
+                        message: `Session scores after update: ${JSON.stringify(sessionScores)}`,
+                    });
+
+                    const readableChart = constructScores(sessionScores);
+                    saySomething(say, `La parola era ${finalWord}. Ecco la classifica aggiornata: \n${readableChart}`);
+                }
             }
         }
     }
