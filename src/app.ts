@@ -1,5 +1,6 @@
 import { APP_TOKEN, PORT, SIGNING_SECRET, TOKEN, SCORES_API, DEBUG_MODE } from './config';
 import { TParticipantsWords, TSessionScores } from './types';
+import fetch from 'node-fetch';
 import {
     constructResponse,
     constructScores,
@@ -50,30 +51,35 @@ let channelId = undefined as string;
 // storing the words
 let participantsWords = {} as TParticipantsWords;
 
-const updateScores = (winners): Promise<boolean> => {
+const updateScores = async (winners): Promise<boolean> => {
     sessionScores = {
         results: getUpdatedScores(participantsWords, winners, sessionScores),
     };
 
-    axios
-        .post(SCORES_API, sessionScores)
-        .then((res) => {
-            logger.log({
-                level: 'info',
-                message: `API update - Status: ${res.status}`,
-            });
-
-            return true;
-        })
-        .catch((error) => {
-            logger.log({
-                level: 'error',
-                message: `API update error: ${error}`,
-            });
-            return false;
+    try {
+        const response = await fetch(SCORES_API, {
+            method: 'POST',
+            body: JSON.stringify(sessionScores),
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
         });
 
-    return new Promise(Boolean);
+        // TODO: we probably want to be more precise with error management here (in case failure is on API side)
+
+        logger.log({
+            level: 'info',
+            message: `API update successful`,
+        });
+
+        return true;
+    } catch (error) {
+        logger.log({
+            level: 'error',
+            message: `Error during API update: ${error}`,
+        });
+    }
 };
 
 app.event('message', async ({ event, say, client }) => {
