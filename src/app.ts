@@ -202,6 +202,11 @@ app.event('app_mention', async ({ event, say }) => {
 app.start(PORT);
 
 if (SCORES_API) {
+    logger.log({
+        level: 'info',
+        message: 'Fetching scores from the API',
+    });
+
     axios.get(SCORES_API).then((resp) => {
         sessionScores = resp.data;
     });
