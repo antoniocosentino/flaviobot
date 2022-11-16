@@ -1,4 +1,4 @@
-import { extractWordFromSentence, getUpdatedScores, getWinners } from '../src/utilities';
+import { extractWordFromSentence, getUpdatedScores, getWinners, wordCleaner } from '../src/utilities';
 
 describe('getWinners', () => {
     it('should get the correct list of winners - 3 participants / 2 winners', async () => {
@@ -265,5 +265,35 @@ describe('extractWordFromSentence', () => {
         const response = extractWordFromSentence(sentence);
 
         expect(response).toEqual('BOSCO');
+    });
+});
+
+describe('wordCleaner', () => {
+    it('should remove a trailing space at the end of the word', async () => {
+        const word = 'SERA ';
+        const response = wordCleaner(word);
+
+        expect(response).toEqual('SERA');
+    });
+
+    it('should remove a leading space at the beginning of the word', async () => {
+        const word = ' SERA';
+        const response = wordCleaner(word);
+
+        expect(response).toEqual('SERA');
+    });
+
+    it('should remove multiple spaces at the end of the word', async () => {
+        const word = 'SERA  ';
+        const response = wordCleaner(word);
+
+        expect(response).toEqual('SERA');
+    });
+
+    it('should remove multiple spaces at the beginning of the word', async () => {
+        const word = '  SERA';
+        const response = wordCleaner(word);
+
+        expect(response).toEqual('SERA');
     });
 });

@@ -10,6 +10,7 @@ import {
     getWinners,
     removeMentionFromString,
     saySomething,
+    wordCleaner,
 } from './utilities';
 const { App } = require('@slack/bolt');
 const axios = require('axios');
@@ -83,7 +84,7 @@ const updateScores = async (winners): Promise<boolean> => {
 };
 
 app.event('message', async ({ event, say, client }) => {
-    const triggerWord = event.text;
+    const triggerWord = wordCleaner(event.text);
 
     if (isGameRunning) {
         participantsWords[event.user] = {

@@ -126,3 +126,7 @@ export const extractWordFromSentence = (sentence: string): string => {
     const relevantWordRegex = /(?<=\bera\s)([A-zÀ-ÿ]+)/;
     return sentence.match(relevantWordRegex)[0];
 };
+
+export const wordCleaner = (word: string): string => {
+    return word.trim();
+};
