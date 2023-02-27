@@ -1,4 +1,10 @@
-import { extractWordFromSentence, getUpdatedScores, getWinners, wordCleaner } from '../src/utilities';
+import {
+    extractWordFromSentence,
+    getUpdatedScores,
+    getWinners,
+    shouldAssignThePoints,
+    wordCleaner,
+} from '../src/utilities';
 
 describe('getWinners', () => {
     it('should get the correct list of winners - 3 participants / 2 winners', async () => {
@@ -295,5 +301,37 @@ describe('wordCleaner', () => {
         const response = wordCleaner(word);
 
         expect(response).toEqual('SERA');
+    });
+});
+
+describe('shouldAssignThePoints', () => {
+    it('should assign the points if there were multiple players', async () => {
+        const participantsWords = {
+            U5ZDPV5S6: {
+                word: 'BOSCO',
+                sentAt: 1667944391,
+            },
+            U5QJXTGR1: {
+                word: 'BOSCO',
+                sentAt: 1667944392,
+            },
+        };
+
+        const response = shouldAssignThePoints(participantsWords);
+
+        expect(response).toEqual(true);
+    });
+
+    it('should not assign the point if only one player played', async () => {
+        const participantsWords = {
+            U5ZDPV5S6: {
+                word: 'BOSCO',
+                sentAt: 1667944391,
+            },
+        };
+
+        const response = shouldAssignThePoints(participantsWords);
+
+        expect(response).toEqual(false);
     });
 });

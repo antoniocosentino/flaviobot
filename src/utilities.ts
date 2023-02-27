@@ -130,3 +130,7 @@ export const extractWordFromSentence = (sentence: string): string => {
 export const wordCleaner = (word: string): string => {
     return word.trim();
 };
+
+export const shouldAssignThePoints = (participantsWords: TParticipantsWords): boolean => {
+    return !(Object.keys(participantsWords).length === 1);
+};

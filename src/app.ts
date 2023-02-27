@@ -10,6 +10,7 @@ import {
     getWinners,
     removeMentionFromString,
     saySomething,
+    shouldAssignThePoints,
     wordCleaner,
 } from './utilities';
 const { App } = require('@slack/bolt');
@@ -190,6 +191,17 @@ app.event('app_mention', async ({ event, say }) => {
             if (winners.length < 1) {
                 saySomething(say, `La parola era ${finalWord}. Non ci sono stati vincitori.`);
             } else {
+                // in case there was only one player, who played by himself
+                // we will not assign the point
+                if (!shouldAssignThePoints(participantsWords)) {
+                    saySomething(
+                        say,
+                        `La parola era ${finalWord}. Essendoci stato un solo giocatore il punto non verrà assegnato.`,
+                    );
+
+                    return;
+                }
+
                 const updateScoresAction = await updateScores(winners);
 
                 if (updateScoresAction) {
