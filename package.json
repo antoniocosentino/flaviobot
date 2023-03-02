@@ -2,7 +2,7 @@
   "name": "flaviobot",
   "version": "2.0.0",
   "description": "Flaviobot is a bot that allows to play the popular Italian TV game \\\"La Ghigliottina\\\" with friends on Slack.",
-  "main": "index.js",
+  "main": "dist/src/app.js",
   "scripts": {
     "build": "npx tsc",
     "start": "node dist/src/app.js",
