@@ -18,6 +18,9 @@ const axios = require('axios');
 const { createLogger, format, transports } = require('winston');
 const { combine, timestamp, label, prettyPrint } = format;
 
+const express = require('express');
+const expressApp = express();
+
 const app = new App({
     token: TOKEN,
     signingSecret: SIGNING_SECRET,
@@ -220,6 +223,10 @@ app.event('app_mention', async ({ event, say }) => {
 
 app.start(PORT);
 
+expressApp.listen(PORT, () => {
+    console.log(`Flaviobot is running on port ${PORT}`);
+});
+
 if (SCORES_API) {
     logger.log({
         level: 'info',
@@ -230,3 +237,10 @@ if (SCORES_API) {
         sessionScores = resp.data;
     });
 }
+
+//   Exposing the service to the outside for 2 reasons:
+// - Verifying if it's running
+// - To be able to trigger a keep-alive mechanism
+expressApp.get('/', (req, res) => {
+    res.send('Flaviobot is running');
+});
