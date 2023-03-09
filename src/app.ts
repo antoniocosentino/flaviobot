@@ -238,9 +238,7 @@ if (SCORES_API) {
     });
 }
 
-//   Exposing the service to the outside for 2 reasons:
-// - Verifying if it's running
-// - To be able to trigger a keep-alive mechanism
+// Exposing the service for healthcheck
 expressApp.get('/', (req, res) => {
     res.send('Flaviobot is running');
 });
