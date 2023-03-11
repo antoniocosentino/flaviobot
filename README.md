@@ -4,7 +4,7 @@
 
 **Flaviobot** is a bot that allows you to play the popular Italian TV game ["La Ghigliottina"](<https://en.wikipedia.org/wiki/L%27eredit%C3%A0#%22La_Ghigliottina%22_(The_Guillotine,_round_7)>) with friends on Slack.
 
-The goal is to be able to secretly store all the participants' words while the game is on and then reveal them all together when everybody has submitted a word. The bot is also able to store and update the players scoreboard.
+The goal is to be able to secretly store all the participants' words while the game is on and then reveal them all together when everybody has submitted a word. The bot is also able to store and update the players' scoreboard.
 
 ![Flaviobot](avatar/flaviobot-logo.jpg)
 
@@ -16,7 +16,7 @@ The name Flaviobot is inspired by **Flavio Insinna**, the host of the TV show.
 
 ### Bot invitation
 
-The bot needs to be invited in your channel. It can also be a private channel. Just invite it as you would do with a real person. It will automatically accept and join.
+The bot needs to be invited to your channel. It can also be a private channel. Just invite it as you would do with a real person. It will automatically accept and join.
 
 ### Start of the game
 
@@ -31,7 +31,7 @@ The command is:
 
 ### Sending a word to the bot
 
-You can now direct message the bot and provide your word. It will be memorized, to be shared later. The bot will also inform (in the channel where he was activated) that a certain user has pr ovided a word (without revealing the word, of course)
+You can now direct message the bot and provide your word. It will be memorized, to be shared later. The bot will also inform (in the channel where he was activated) that a certain user has provided a word (without revealing the word, of course)
 
 _The word is sent in a direct message:_
 
@@ -58,7 +58,7 @@ The bot closes the game and reveals all the words that were submitted.
 
 ### Announcing the correct word / updating the chart
 
-Once the correct word is revealed in the TV show, it can be communicated to the bot. In this way the bot will update the chart in case there were winners.
+Once the correct word is revealed in the TV show, it can be communicated to the bot. In this way, the bot will update the chart in case there were winners.
 
 ```
 @flaviobot era {WORD}
@@ -66,7 +66,7 @@ Once the correct word is revealed in the TV show, it can be communicated to the 
 
 ![Scores](screenshots/scores.png)
 
-In case there are winners, the updated chart will be revealed. Otherwise the bot will just communicate that nobody guessed the right word.
+In case there are winners, the updated chart will be revealed. Otherwise, the bot will just communicate that nobody guessed the right word.
 
 ![No Winners](screenshots/no-winners.png)
 
@@ -80,16 +80,18 @@ The scoreboard can be revealed at any time, by using this command:
 
 #### How points are calculated
 
-The amount of points each player receives is based on the amount of participants in that specific game session:
+The amount of points each player receives is based on the number of participants in that specific game session:
 
 `n. of points = n. of players / n. of winners`
 
-For example, if there are 2 players and both win, they get 1 point each.
+For example, if there are 2 players and they both win, they get 1 point each.
 If there are 3 players and only 1 player guesses the word, he gets 3 points while the others get 0.
+
+In case a player is playing alone, and there are no other challengers, the point will not be assigned, even if the word was correctly guessed.
 
 #### Extra points
 
-Since the score cannot contain decimals it might also happen that there are extra points to be assigned. For example, if there are 3 players but only 2 are guessing the word, each player should receive 1 point but then we have an extra point to assign. In this case the point will be assigned to the player who answered correctly first.
+Since the score cannot contain decimals it might also happen that there are extra points to be assigned. For example, if there are 3 players but only 2 are guessing the word, each player should receive 1 point but then we have an extra point to assign. In this case, the point will be assigned to the player who answered correctly first.
 
 #### How can I use it?
 
