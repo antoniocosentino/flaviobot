@@ -1,8 +1,6 @@
 # Flaviobot
 
-![Unit tests](https://github.com/antoniocosentino/flaviobot/actions/workflows/unit-tests.yml/badge.svg)
-
-![Uptime Robot](https://img.shields.io/uptimerobot/status/m793891677-7278ad78afd4e19b9512dde8)
+![Unit tests](https://github.com/antoniocosentino/flaviobot/actions/workflows/unit-tests.yml/badge.svg) ![Uptime Robot](https://img.shields.io/uptimerobot/status/m793891677-7278ad78afd4e19b9512dde8)
 
 **Flaviobot** is a bot that allows you to play the popular Italian TV game ["La Ghigliottina"](<https://en.wikipedia.org/wiki/L%27eredit%C3%A0#%22La_Ghigliottina%22_(The_Guillotine,_round_7)>) with friends on Slack.
 
