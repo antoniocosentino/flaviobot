@@ -118,6 +118,11 @@ app.event('message', async ({ event, say, client }) => {
 });
 
 app.event('app_mention', async ({ event, say }) => {
+    logger.log({
+        level: 'info',
+        message: `Bot was mentioned. Here is the full mention: "${event.text}"`,
+    });
+
     const triggerWord = removeMentionFromString(event.text);
 
     switch (triggerWord) {
