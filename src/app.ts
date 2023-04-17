@@ -123,7 +123,7 @@ app.event('app_mention', async ({ event, say }) => {
         message: `Bot was mentioned. Here is the full mention: "${event.text}"`,
     });
 
-    const triggerWord = removeMentionFromString(event.text);
+    const triggerWord = wordCleaner(removeMentionFromString(event.text));
 
     switch (triggerWord) {
         case 'vai!':
