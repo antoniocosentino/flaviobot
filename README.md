@@ -8,7 +8,7 @@ The goal is to be able to secretly store all the participants' words while the g
 
 ![Flaviobot](avatar/flaviobot-logo.jpg)
 
-The name Flaviobot is inspired by **Flavio Insinna**, the host of the TV show.
+The name Flaviobot is inspired by **Flavio Insinna**, the former host of the TV show (I should probably call it Liornibot now, but it doesn't sound that cool).
 
 ## How does it work?
 
