@@ -88,141 +88,152 @@ const updateScores = async (winners): Promise<boolean> => {
 };
 
 app.event('message', async ({ event, say, client }) => {
-    const triggerWord = wordCleaner(event.text);
+    if (event && event.text) {
+        const triggerWord = wordCleaner(event.text);
 
-    if (isGameRunning) {
-        participantsWords[event.user] = {
-            word: triggerWord,
-            sentAt: Math.floor(Date.now() / 1000),
-        };
-        saySomething(say, `Ok, ho memorizzato la tua parola: ${triggerWord}`);
+        if (isGameRunning) {
+            participantsWords[event.user] = {
+                word: triggerWord,
+                sentAt: Math.floor(Date.now() / 1000),
+            };
+            saySomething(say, `Ok, ho memorizzato la tua parola: ${triggerWord}`);
 
-        logger.log({
-            level: 'info',
-            message: `Received word from ${event.user}: ${triggerWord}`,
-        });
-
-        const friendly_name = getFriendlyNameFromId(event.user);
-
-        try {
-            await client.chat.postMessage({
-                channel: channelId,
-                text: `*${friendly_name}* ha scritto la sua parola`,
+            logger.log({
+                level: 'info',
+                message: `Received word from ${event.user}: ${triggerWord}`,
             });
-        } catch (error) {
-            console.error(error);
+
+            const friendly_name = getFriendlyNameFromId(event.user);
+
+            try {
+                await client.chat.postMessage({
+                    channel: channelId,
+                    text: `*${friendly_name}* ha scritto la sua parola`,
+                });
+            } catch (error) {
+                console.error(error);
+            }
+        } else {
+            saySomething(say, 'Non puoi inviarmi la parola se il gioco non è in corso');
         }
     } else {
-        saySomething(say, 'Non puoi inviarmi la parola se il gioco non è in corso');
+        console.error('Invalid message event:', event);
     }
 });
 
 app.event('app_mention', async ({ event, say }) => {
-    logger.log({
-        level: 'info',
-        message: `Bot was mentioned. Here is the full mention: "${event.text}"`,
-    });
+    if (event && event.text) {
+        logger.log({
+            level: 'info',
+            message: `Bot was mentioned. Here is the full mention: "${event.text}"`,
+        });
 
-    const triggerWord = wordCleaner(removeMentionFromString(event.text));
+        const triggerWord = wordCleaner(removeMentionFromString(event.text));
 
-    switch (triggerWord) {
-        case 'vai!':
-            if (!isGameRunning) {
-                saySomething(say, 'Inizia il gioco. Attendo le vostre risposte in DM');
-                isGameRunning = true;
-                // resetting the words object
-                participantsWords = {};
-                channelId = event.channel;
+        switch (triggerWord) {
+            case 'vai!':
+                if (!isGameRunning) {
+                    saySomething(say, 'Inizia il gioco. Attendo le vostre risposte in DM');
+                    isGameRunning = true;
+                    // resetting the words object
+                    participantsWords = {};
+                    channelId = event.channel;
 
-                logger.log({
-                    level: 'info',
-                    message: `Game was started - Session scores: ${JSON.stringify(sessionScores)}`,
-                });
-            } else {
-                saySomething(say, 'Il gioco è già stato avviato');
-            }
-            break;
-
-        case 'stop!':
-            if (isGameRunning) {
-                const allWords = constructResponse(participantsWords);
-
-                saySomething(say, `Il gioco è chiuso. Ecco le parole: \n ${allWords}`);
-                isGameRunning = false;
-                isWaitingForWord = true;
-
-                logger.log({
-                    level: 'info',
-                    message: `Game was stopped - Words: ${JSON.stringify(participantsWords)}`,
-                });
-            } else {
-                saySomething(say, 'Nessun gioco in corso');
-            }
-            break;
-
-        case 'classifica!':
-            if (!SCORES_API) {
-                saySomething(say, 'Questa funzionalità non è supportata.');
-            } else {
-                const readableScores = constructScores(sessionScores);
-                saySomething(say, `Ecco la classifica: \n ${readableScores}`);
-
-                logger.log({
-                    level: 'info',
-                    message: `${event.user} asked for scores. Current scores: ${JSON.stringify(sessionScores)}`,
-                });
-            }
-
-            break;
-    }
-
-    // The switch only covered the exact matches
-    // in the case where we communicate the correct word to the bot, we need to match a sentence pattern
-
-    if (triggerWord.startsWith('era ')) {
-        if (!isWaitingForWord) {
-            saySomething(say, 'Non puoi comunicarmi la parola vincente in questa fase del gioco.');
-        } else if (!SCORES_API) {
-            saySomething(say, 'Questa funzionalità non è supportata.');
-        } else {
-            isWaitingForWord = false;
-
-            const finalWord = extractWordFromSentence(triggerWord);
-
-            const winners = getWinners(finalWord, participantsWords);
-
-            logger.log({
-                level: 'info',
-                message: `Received final word: ${finalWord} - Winners: ${JSON.stringify(winners)} `,
-            });
-
-            if (winners.length < 1) {
-                saySomething(say, `La parola era ${finalWord}. Non ci sono stati vincitori.`);
-            } else {
-                // in case there was only one player, who played by himself
-                // we will not assign the point
-                if (!shouldAssignThePoints(participantsWords)) {
-                    saySomething(
-                        say,
-                        `La parola era ${finalWord}. Essendoci stato un solo giocatore il punto non verrà assegnato.`,
-                    );
-
-                    return;
-                }
-
-                const updateScoresAction = await updateScores(winners);
-
-                if (updateScoresAction) {
                     logger.log({
                         level: 'info',
-                        message: `Session scores after update: ${JSON.stringify(sessionScores)}`,
+                        message: `Game was started - Session scores: ${JSON.stringify(sessionScores)}`,
                     });
+                } else {
+                    saySomething(say, 'Il gioco è già stato avviato');
+                }
+                break;
 
-                    const readableChart = constructScores(sessionScores);
-                    saySomething(say, `La parola era ${finalWord}. Ecco la classifica aggiornata: \n${readableChart}`);
+            case 'stop!':
+                if (isGameRunning) {
+                    const allWords = constructResponse(participantsWords);
+
+                    saySomething(say, `Il gioco è chiuso. Ecco le parole: \n ${allWords}`);
+                    isGameRunning = false;
+                    isWaitingForWord = true;
+
+                    logger.log({
+                        level: 'info',
+                        message: `Game was stopped - Words: ${JSON.stringify(participantsWords)}`,
+                    });
+                } else {
+                    saySomething(say, 'Nessun gioco in corso');
+                }
+                break;
+
+            case 'classifica!':
+                if (!SCORES_API) {
+                    saySomething(say, 'Questa funzionalità non è supportata.');
+                } else {
+                    const readableScores = constructScores(sessionScores);
+                    saySomething(say, `Ecco la classifica: \n ${readableScores}`);
+
+                    logger.log({
+                        level: 'info',
+                        message: `${event.user} asked for scores. Current scores: ${JSON.stringify(sessionScores)}`,
+                    });
+                }
+
+                break;
+        }
+
+        // The switch only covered the exact matches
+        // in the case where we communicate the correct word to the bot, we need to match a sentence pattern
+
+        if (triggerWord.startsWith('era ')) {
+            if (!isWaitingForWord) {
+                saySomething(say, 'Non puoi comunicarmi la parola vincente in questa fase del gioco.');
+            } else if (!SCORES_API) {
+                saySomething(say, 'Questa funzionalità non è supportata.');
+            } else {
+                isWaitingForWord = false;
+
+                const finalWord = extractWordFromSentence(triggerWord);
+
+                const winners = getWinners(finalWord, participantsWords);
+
+                logger.log({
+                    level: 'info',
+                    message: `Received final word: ${finalWord} - Winners: ${JSON.stringify(winners)} `,
+                });
+
+                if (winners.length < 1) {
+                    saySomething(say, `La parola era ${finalWord}. Non ci sono stati vincitori.`);
+                } else {
+                    // in case there was only one player, who played by himself
+                    // we will not assign the point
+                    if (!shouldAssignThePoints(participantsWords)) {
+                        saySomething(
+                            say,
+                            `La parola era ${finalWord}. Essendoci stato un solo giocatore il punto non verrà assegnato.`,
+                        );
+
+                        return;
+                    }
+
+                    const updateScoresAction = await updateScores(winners);
+
+                    if (updateScoresAction) {
+                        logger.log({
+                            level: 'info',
+                            message: `Session scores after update: ${JSON.stringify(sessionScores)}`,
+                        });
+
+                        const readableChart = constructScores(sessionScores);
+                        saySomething(
+                            say,
+                            `La parola era ${finalWord}. Ecco la classifica aggiornata: \n${readableChart}`,
+                        );
+                    }
                 }
             }
         }
+    } else {
+        console.error('Invalid app_mention event:', event);
     }
 });
 
