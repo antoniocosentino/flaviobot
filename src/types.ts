@@ -13,3 +13,12 @@ export type TSingleScore = {
     user: string;
     score: number;
 };
+
+export type THallOfFame = {
+    'hall-of-fame': TSingleHallOfFameEntry[];
+};
+
+export type TSingleHallOfFameEntry = {
+    season: string;
+    winner: string;
+};

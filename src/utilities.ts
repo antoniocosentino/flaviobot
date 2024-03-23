@@ -1,6 +1,6 @@
 const _ = require('lodash');
 
-import { TParticipantsWords, TSessionScores, TSingleScore } from './types';
+import { THallOfFame, TParticipantsWords, TSessionScores, TSingleScore } from './types';
 
 // I don't want to make an extra API call for this, so I will store the known
 // players nicknames here
@@ -39,6 +39,20 @@ export const constructScores = (sessionScores: TSessionScores): string => {
 
     sorted.forEach((singleResult) => {
         finalResponse = finalResponse + `• *${getFriendlyNameFromId(singleResult.user)}*: ${singleResult.score} \n`;
+    });
+
+    return finalResponse;
+};
+
+export const constructHallOfFame = (hallOfFame: THallOfFame): string => {
+    let finalResponse = '';
+
+    if (!hallOfFame) {
+        return '';
+    }
+
+    hallOfFame['hall-of-fame']?.forEach((singleRecord) => {
+        finalResponse = finalResponse + `🏆 *${singleRecord.season}*: ${singleRecord.winner} \n`;
     });
 
     return finalResponse;

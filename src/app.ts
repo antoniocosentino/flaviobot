@@ -2,6 +2,7 @@ import { APP_TOKEN, PORT, SIGNING_SECRET, TOKEN, SCORES_API, DEBUG_MODE } from '
 import { TParticipantsWords, TSessionScores } from './types';
 import fetch from 'node-fetch';
 import {
+    constructHallOfFame,
     constructResponse,
     constructScores,
     extractWordFromSentence,
@@ -152,7 +153,7 @@ app.event('app_mention', async ({ event, say }) => {
                 if (isGameRunning) {
                     const allWords = constructResponse(participantsWords);
 
-                    saySomething(say, `Il gioco è chiuso. Ecco le parole: \n ${allWords}`);
+                    saySomething(say, `Il gioco è chiuso. Ecco le parole:\n${allWords}`);
                     isGameRunning = false;
                     isWaitingForWord = true;
 
@@ -170,12 +171,60 @@ app.event('app_mention', async ({ event, say }) => {
                     saySomething(say, 'Questa funzionalità non è supportata.');
                 } else {
                     const readableScores = constructScores(sessionScores);
-                    saySomething(say, `Ecco la classifica: \n ${readableScores}`);
+                    saySomething(say, `Ecco la classifica:\n${readableScores}`);
 
                     logger.log({
                         level: 'info',
                         message: `${event.user} asked for scores. Current scores: ${JSON.stringify(sessionScores)}`,
                     });
+                }
+
+                break;
+
+            case "albo d'oro!":
+                if (!SCORES_API) {
+                    saySomething(say, 'Questa funzionalità non è supportata.');
+                } else {
+                    logger.log({
+                        level: 'info',
+                        message: `${event.user} asked for hall of fame. Fetching it from endpoint`,
+                    });
+
+                    let hallOfFame = null;
+
+                    axios
+                        .get(`${SCORES_API}/hall-of-fame`)
+                        .then((resp) => {
+                            hallOfFame = resp.data;
+
+                            const readableHallOfFame = hallOfFame ? constructHallOfFame(hallOfFame) : '';
+
+                            if (readableHallOfFame) {
+                                saySomething(say, `Ecco l'albo d'oro:\n${readableHallOfFame}`);
+
+                                logger.log({
+                                    level: 'info',
+                                    message: `Hall of fame was shown in the channel. Records: ${JSON.stringify(
+                                        hallOfFame,
+                                    )}`,
+                                });
+
+                                return;
+                            }
+
+                            logger.log({
+                                level: 'info',
+                                message: `Hall of fame was not shown in the channel because it was empty`,
+                            });
+                        })
+                        .catch((error) => {
+                            logger.log({
+                                level: 'info',
+                                message: `Fetching of hall of fame failed. ${error}`,
+                            });
+
+                            return;
+                        });
                 }
 
                 break;
@@ -226,7 +275,7 @@ app.event('app_mention', async ({ event, say }) => {
                         const readableChart = constructScores(sessionScores);
                         saySomething(
                             say,
-                            `La parola era ${finalWord}. Ecco la classifica aggiornata: \n${readableChart}`,
+                            `La parola era ${finalWord}. Ecco la classifica aggiornata:\n${readableChart}`,
                         );
                     }
                 }
