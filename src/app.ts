@@ -268,7 +268,7 @@ app.event('app_mention', async ({ event, say }) => {
 
                     const readableChart = constructScores(sessionScores);
 
-                    if (isOnlyOnePlayer(participantsWords)) {
+                    if (isOnlyOnePlayer(participantsWords) && winners.length === 0) {
                         saySomething(
                             say,
                             `La parola era ${finalWord}. Non ci sono stati vincitori, ma verrà assegnato un quarto di punto di partecipazione. Ecco la classifica aggiornata:\n${readableChart}`,
