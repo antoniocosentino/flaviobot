@@ -1,10 +1,4 @@
-import {
-    extractWordFromSentence,
-    getUpdatedScores,
-    getWinners,
-    shouldAssignThePoints,
-    wordCleaner,
-} from '../src/utilities';
+import { extractWordFromSentence, getUpdatedScores, getWinners, isOnlyOnePlayer, wordCleaner } from '../src/utilities';
 
 describe('getWinners', () => {
     it('should get the correct list of winners - 3 participants / 2 winners', async () => {
@@ -256,6 +250,169 @@ describe('getUpdatedScores', () => {
             },
         ]);
     });
+
+    it('should assign the participation quarter point - 1 participants / 0 winners', async () => {
+        const winners = [];
+
+        const participantsWords = {
+            U5ZDPV5S6: {
+                word: 'BOSCO',
+                sentAt: 1667944392,
+            },
+        };
+
+        const sessionScores = {
+            results: [
+                {
+                    user: 'U5ZDPV5S6',
+                    score: 1,
+                },
+                {
+                    user: 'U5QJXTGR1',
+                    score: 2,
+                },
+                {
+                    user: 'U5X56H0TG',
+                    score: 3,
+                },
+                {
+                    user: 'U5Q1D5LE4',
+                    score: 0,
+                },
+            ],
+        };
+
+        const response = getUpdatedScores(participantsWords, winners, sessionScores);
+
+        expect(response).toEqual([
+            {
+                user: 'U5ZDPV5S6',
+                score: 1.25,
+            },
+            {
+                user: 'U5QJXTGR1',
+                score: 2,
+            },
+            {
+                user: 'U5X56H0TG',
+                score: 3,
+            },
+            {
+                user: 'U5Q1D5LE4',
+                score: 0,
+            },
+        ]);
+    });
+
+    it('should NOT assign the participation quarter point - 2 participants / 0 winners', async () => {
+        const winners = [];
+
+        const participantsWords = {
+            U5ZDPV5S6: {
+                word: 'BOSCO',
+                sentAt: 1667944392,
+            },
+            U5QJXTGR1: {
+                word: 'BOSCO',
+                sentAt: 1667944391,
+            },
+        };
+
+        const sessionScores = {
+            results: [
+                {
+                    user: 'U5ZDPV5S6',
+                    score: 1,
+                },
+                {
+                    user: 'U5QJXTGR1',
+                    score: 2,
+                },
+                {
+                    user: 'U5X56H0TG',
+                    score: 3,
+                },
+                {
+                    user: 'U5Q1D5LE4',
+                    score: 0,
+                },
+            ],
+        };
+
+        const response = getUpdatedScores(participantsWords, winners, sessionScores);
+
+        expect(response).toEqual([
+            {
+                user: 'U5ZDPV5S6',
+                score: 1,
+            },
+            {
+                user: 'U5QJXTGR1',
+                score: 2,
+            },
+            {
+                user: 'U5X56H0TG',
+                score: 3,
+            },
+            {
+                user: 'U5Q1D5LE4',
+                score: 0,
+            },
+        ]);
+    });
+
+    it('should update the scores correctly - 1 participants / 1 winners', async () => {
+        const winners = ['U5ZDPV5S6'];
+
+        const participantsWords = {
+            U5ZDPV5S6: {
+                word: 'BOSCO',
+                sentAt: 1667944392,
+            },
+        };
+
+        const sessionScores = {
+            results: [
+                {
+                    user: 'U5ZDPV5S6',
+                    score: 1,
+                },
+                {
+                    user: 'U5QJXTGR1',
+                    score: 2,
+                },
+                {
+                    user: 'U5X56H0TG',
+                    score: 3,
+                },
+                {
+                    user: 'U5Q1D5LE4',
+                    score: 0,
+                },
+            ],
+        };
+
+        const response = getUpdatedScores(participantsWords, winners, sessionScores);
+
+        expect(response).toEqual([
+            {
+                user: 'U5ZDPV5S6',
+                score: 2,
+            },
+            {
+                user: 'U5QJXTGR1',
+                score: 2,
+            },
+            {
+                user: 'U5X56H0TG',
+                score: 3,
+            },
+            {
+                user: 'U5Q1D5LE4',
+                score: 0,
+            },
+        ]);
+    });
 });
 
 describe('extractWordFromSentence', () => {
@@ -304,8 +461,21 @@ describe('wordCleaner', () => {
     });
 });
 
-describe('shouldAssignThePoints', () => {
-    it('should assign the points if there were multiple players', async () => {
+describe('isOnlyOnePlayer', () => {
+    it('should return true if only one player played', async () => {
+        const participantsWords = {
+            U5ZDPV5S6: {
+                word: 'BOSCO',
+                sentAt: 1667944391,
+            },
+        };
+
+        const response = isOnlyOnePlayer(participantsWords);
+
+        expect(response).toEqual(true);
+    });
+
+    it('should return false if multiple players played', async () => {
         const participantsWords = {
             U5ZDPV5S6: {
                 word: 'BOSCO',
@@ -317,20 +487,7 @@ describe('shouldAssignThePoints', () => {
             },
         };
 
-        const response = shouldAssignThePoints(participantsWords);
-
-        expect(response).toEqual(true);
-    });
-
-    it('should not assign the point if only one player played', async () => {
-        const participantsWords = {
-            U5ZDPV5S6: {
-                word: 'BOSCO',
-                sentAt: 1667944391,
-            },
-        };
-
-        const response = shouldAssignThePoints(participantsWords);
+        const response = isOnlyOnePlayer(participantsWords);
 
         expect(response).toEqual(false);
     });

@@ -9,9 +9,9 @@ import {
     getFriendlyNameFromId,
     getUpdatedScores,
     getWinners,
+    isOnlyOnePlayer,
     removeMentionFromString,
     saySomething,
-    shouldAssignThePoints,
     wordCleaner,
 } from './utilities';
 const { App } = require('@slack/bolt');
@@ -250,34 +250,34 @@ app.event('app_mention', async ({ event, say }) => {
                     message: `Received final word: ${finalWord} - Winners: ${JSON.stringify(winners)} `,
                 });
 
-                if (winners.length < 1) {
+                // the only scenario where we don't update the scores is when there are no winners
+                // and more than one participant (nobody guessed the word)
+                if (winners.length === 0 && !isOnlyOnePlayer(participantsWords)) {
                     saySomething(say, `La parola era ${finalWord}. Non ci sono stati vincitori.`);
-                } else {
-                    // in case there was only one player, who played by himself
-                    // we will not assign the point
-                    if (!shouldAssignThePoints(participantsWords)) {
+
+                    return;
+                }
+
+                const updateScoresAction = await updateScores(winners);
+
+                if (updateScoresAction) {
+                    logger.log({
+                        level: 'info',
+                        message: `Session scores after update: ${JSON.stringify(sessionScores)}`,
+                    });
+
+                    const readableChart = constructScores(sessionScores);
+
+                    if (isOnlyOnePlayer(participantsWords)) {
                         saySomething(
                             say,
-                            `La parola era ${finalWord}. Essendoci stato un solo giocatore il punto non verrà assegnato.`,
+                            `La parola era ${finalWord}. Non ci sono stati vincitori, ma verrà assegnato un quarto di punto di partecipazione. Ecco la classifica aggiornata:\n${readableChart}`,
                         );
 
                         return;
                     }
 
-                    const updateScoresAction = await updateScores(winners);
-
-                    if (updateScoresAction) {
-                        logger.log({
-                            level: 'info',
-                            message: `Session scores after update: ${JSON.stringify(sessionScores)}`,
-                        });
-
-                        const readableChart = constructScores(sessionScores);
-                        saySomething(
-                            say,
-                            `La parola era ${finalWord}. Ecco la classifica aggiornata:\n${readableChart}`,
-                        );
-                    }
+                    saySomething(say, `La parola era ${finalWord}. Ecco la classifica aggiornata:\n${readableChart}`);
                 }
             }
         }

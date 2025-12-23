@@ -100,6 +100,10 @@ export const getUpdatedScores = (
 
     const updatedScores = [] as TSingleScore[];
 
+    // Check if there are no winners and only one participant (participation prize)
+    const shouldAwardParticipationPrize = winners.length === 0 && isOnlyOnePlayer(participantsWords);
+    const singleParticipantId = shouldAwardParticipationPrize ? Object.keys(participantsWords)[0] : null;
+
     sessionScores.results.forEach((singlePerson) => {
         // check if this person is a winner
         if (winners.includes(singlePerson.user)) {
@@ -108,6 +112,12 @@ export const getUpdatedScores = (
             updatedScores.push({
                 user: singlePerson.user,
                 score: singlePerson.score + pointsPerWinner + additionalPoints,
+            });
+        } else if (shouldAwardParticipationPrize && singlePerson.user === singleParticipantId) {
+            // Award participation quarter point to the single participant when there are no winners
+            updatedScores.push({
+                user: singlePerson.user,
+                score: singlePerson.score + 0.25,
             });
         } else {
             updatedScores.push({
@@ -145,6 +155,6 @@ export const wordCleaner = (word: string): string => {
     return word.trim();
 };
 
-export const shouldAssignThePoints = (participantsWords: TParticipantsWords): boolean => {
-    return !(Object.keys(participantsWords).length === 1);
+export const isOnlyOnePlayer = (participantsWords: TParticipantsWords): boolean => {
+    return Object.keys(participantsWords).length === 1;
 };
