@@ -87,7 +87,7 @@ The amount of points each player receives is based on the number of participants
 For example, if there are 2 players and they both win, they get 1 point each.
 If there are 3 players and only 1 player guesses the word, he gets 3 points while the others get 0.
 
-In case a player is playing alone, and there are no other challengers, the point will not be assigned, even if the word was correctly guessed.
+In case a player is playing alone, and there are no other challengers, they will still get the point if the word was correctly guessed. If not, they will get +0.25 for participating. The participation prize is only awarded if a player is playing alone. Therefore, if there's more that one participant, and nobody guesses it, nobody will score any points.
 
 #### Extra points
 
