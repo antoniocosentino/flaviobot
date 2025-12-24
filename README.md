@@ -84,14 +84,14 @@ The amount of points each player receives is based on the number of participants
 
 `n. of points = n. of players / n. of winners`
 
-For example, if there are 2 players and they both win, they get 1 point each.
-If there are 3 players and only 1 player guesses the word, he gets 3 points while the others get 0.
+For example, if there are two players and both guess the word correctly, each receives one point.
+If there are three players and only one guesses the word, that player receives three points, while the others receive none.
 
-In case a player is playing alone, and there are no other challengers, they will still get the point if the word was correctly guessed. If not, they will get +0.25 for participating. The participation prize is only awarded if a player is playing alone. If there's more that one participant, and nobody guesses it, nobody will score any points.
+If a player is playing alone, with no other challengers, they will still receive the point if the word is guessed correctly. If not, they receive 0.25 points for participation. This participation bonus is awarded only when a player is playing alone. If there is more than one participant and nobody guesses the word, no points are awarded.
 
 #### Extra points
 
-Since the score cannot contain decimals it might also happen that there are extra points to be assigned. For example, if there are 3 players but only 2 are guessing the word, each player should receive 1 point but then we have an extra point to assign. In this case, the point will be assigned to the player who answered correctly first.
+In some cases, there may be an extra point to award. For example, if there are three players but only two correctly guess the word, each would normally receive one point, leaving one additional point unassigned. In this situation, instead of splitting the points evenly among the winners, the extra point is awarded to the player who answered correctly first.
 
 #### How can I use it?
 
