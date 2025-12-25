@@ -1,6 +1,6 @@
 const _ = require('lodash');
 
-import { THallOfFame, TParticipantsWords, TSessionScores, TSingleScore } from './types';
+import { THallOfFame, TParticipantsWords, TPointsScenario, TSessionScores, TSingleScore } from './types';
 
 // I don't want to make an extra API call for this, so I will store the known
 // players nicknames here
@@ -157,4 +157,16 @@ export const wordCleaner = (word: string): string => {
 
 export const isOnlyOnePlayer = (participantsWords: TParticipantsWords): boolean => {
     return Object.keys(participantsWords).length === 1;
+};
+
+export const getPointsScenario = (winners: string[], participantsWords: TParticipantsWords): TPointsScenario => {
+    if (winners.length === 0 && !isOnlyOnePlayer(participantsWords)) {
+        return 'no-points';
+    }
+
+    if (isOnlyOnePlayer(participantsWords) && winners.length === 0) {
+        return 'participation-points';
+    }
+
+    return 'points';
 };

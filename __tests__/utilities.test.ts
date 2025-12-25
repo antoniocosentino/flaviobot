@@ -1,4 +1,11 @@
-import { extractWordFromSentence, getUpdatedScores, getWinners, isOnlyOnePlayer, wordCleaner } from '../src/utilities';
+import {
+    extractWordFromSentence,
+    getPointsScenario,
+    getUpdatedScores,
+    getWinners,
+    isOnlyOnePlayer,
+    wordCleaner,
+} from '../src/utilities';
 
 describe('getWinners', () => {
     it('should get the correct list of winners - 3 participants / 2 winners', async () => {
@@ -490,5 +497,106 @@ describe('isOnlyOnePlayer', () => {
         const response = isOnlyOnePlayer(participantsWords);
 
         expect(response).toEqual(false);
+    });
+});
+
+describe('getPointsScenario', () => {
+    it('should award no points if multiple players but no winners', async () => {
+        const winners = [];
+
+        const participantsWords = {
+            U5ZDPV5S6: {
+                word: 'BOSCO',
+                sentAt: 1667944392,
+            },
+            U5QJXTGR1: {
+                word: 'BOSCO',
+                sentAt: 1667944391,
+            },
+            U5X56H0TG: {
+                word: 'FORESTA',
+                sentAt: 1667944393,
+            },
+        };
+
+        const response = getPointsScenario(winners, participantsWords);
+
+        expect(response).toEqual('no-points');
+    });
+
+    it('should award point if only one player who is also a winner', async () => {
+        const winners = ['U5ZDPV5S6'];
+
+        const participantsWords = {
+            U5ZDPV5S6: {
+                word: 'BOSCO',
+                sentAt: 1667944392,
+            },
+        };
+
+        const response = getPointsScenario(winners, participantsWords);
+
+        expect(response).toEqual('points');
+    });
+
+    it('should award points if multiple players and one winner', async () => {
+        const winners = ['U5ZDPV5S6'];
+
+        const participantsWords = {
+            U5ZDPV5S6: {
+                word: 'BOSCO',
+                sentAt: 1667944392,
+            },
+            U5QJXTGR1: {
+                word: 'FORESTA',
+                sentAt: 1667944391,
+            },
+            U5X56H0TG: {
+                word: 'FORESTA',
+                sentAt: 1667944393,
+            },
+        };
+
+        const response = getPointsScenario(winners, participantsWords);
+
+        expect(response).toEqual('points');
+    });
+
+    it('should award points if multiple players and two winners', async () => {
+        const winners = ['U5ZDPV5S6', 'U5QJXTGR1'];
+
+        const participantsWords = {
+            U5ZDPV5S6: {
+                word: 'BOSCO',
+                sentAt: 1667944392,
+            },
+            U5QJXTGR1: {
+                word: 'BOSCO',
+                sentAt: 1667944391,
+            },
+            U5X56H0TG: {
+                word: 'FORESTA',
+                sentAt: 1667944393,
+            },
+        };
+
+        const response = getPointsScenario(winners, participantsWords);
+
+        expect(response).toEqual('points');
+    });
+
+    it('should award participation point if one player but no winners', async () => {
+        const winners = [];
+
+        const participantsWords = {
+            U5ZDPV5S6: {
+                word: 'BOSCO',
+                sentAt: 1667944392,
+            },
+        };
+
+        const response = getPointsScenario(winners, participantsWords);
+
+        expect(response).toEqual('participation-points');
     });
 });

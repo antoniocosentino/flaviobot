@@ -7,6 +7,7 @@ import {
     constructScores,
     extractWordFromSentence,
     getFriendlyNameFromId,
+    getPointsScenario,
     getUpdatedScores,
     getWinners,
     isOnlyOnePlayer,
@@ -250,9 +251,11 @@ app.event('app_mention', async ({ event, say }) => {
                     message: `Received final word: ${finalWord} - Winners: ${JSON.stringify(winners)} `,
                 });
 
+                const pointsScenario = getPointsScenario(winners, participantsWords);
+
                 // the only scenario where we don't update the scores is when there are no winners
                 // and more than one participant (nobody guessed the word)
-                if (winners.length === 0 && !isOnlyOnePlayer(participantsWords)) {
+                if (pointsScenario === 'no-points') {
                     saySomething(say, `La parola era ${finalWord}. Non ci sono stati vincitori.`);
 
                     return;
@@ -268,7 +271,7 @@ app.event('app_mention', async ({ event, say }) => {
 
                     const readableChart = constructScores(sessionScores);
 
-                    if (isOnlyOnePlayer(participantsWords) && winners.length === 0) {
+                    if (pointsScenario === 'participation-points') {
                         saySomething(
                             say,
                             `La parola era ${finalWord}. Non ci sono stati vincitori, ma verrà assegnato un quarto di punto di partecipazione. Ecco la classifica aggiornata:\n${readableChart}`,

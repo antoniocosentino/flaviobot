@@ -22,3 +22,5 @@ export type TSingleHallOfFameEntry = {
     season: string;
     winner: string;
 };
+
+export type TPointsScenario = 'points' | 'no-points' | 'participation-points';
